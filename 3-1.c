@@ -1,64 +1,52 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 struct IntArray {
     int length;
     int *dataPtr;
 };
 
-struct IntArray* mallocIntArray(int length) {
-    struct IntArray *array = (struct IntArray*)malloc(sizeof(struct IntArray));
+struct IntArray *mallocIntArray(int length) {
+    struct IntArray *array = (struct IntArray *)malloc(sizeof(struct IntArray));
     if (array == NULL) {
-        perror("mallocIntArray");
+        perror("Memory allocation error");
         exit(1);
     }
     array->length = length;
-    array->dataPtr = (int*)malloc(length * sizeof(int));
+    array->dataPtr = (int *)malloc(length * sizeof(int));
     if (array->dataPtr == NULL) {
-        perror("malloc");
+        perror("Memory allocation error");
         exit(1);
     }
     return array;
 }
 
-void freeIntArray(struct IntArray *arrayPtr) {
-    free(arrayPtr->dataPtr);
-    free(arrayPtr);
+void freeIntArray(struct IntArray *array) {
+    free(array->dataPtr);
+    free(array);
 }
 
 void readIntArray(struct IntArray *array) {
     printf("Enter %d positive integers:\n", array->length);
     for (int i = 0; i < array->length; i++) {
-        char input[20];
-        bool validInput = false;
-        while (!validInput) {
+        int value;
+        while (1) {
             printf("Enter int: ");
-            if (fgets(input, sizeof(input), stdin) != NULL) {
-                char *endptr;
-                long num = strtol(input, &endptr, 10);
-                if (*endptr == '\n' || *endptr == '\0' && endptr != input) {
-                    if (num > 0) {
-                        array->dataPtr[i] = (int)num;
-                        validInput = true;
-                    } else {
-                        printf("Invalid input. Enter a positive int.\n");
-                    }
-                } else {
-                    printf("Invalid input. Enter a valid int.\n");
-                }
+            if (scanf("%d", &value) == 1 && value > 0) {
+                array->dataPtr[i] = value;
+                break;
             } else {
-                printf("Error reading input.\n");
-                exit(1);
+                printf("Invalid input. Enter a positive int.\n");
+                while (getchar() != '\n');
             }
         }
     }
 }
 
-void swap(int *xp, int *yp) {
-    int temp = *xp;
-    *xp = *yp;
-    *yp = temp;
+void swap(int *x, int *y) {
+    int temp = *x;
+    *x = *y;
+    *y = temp;
 }
 
 void sortIntArray(struct IntArray *array) {
@@ -72,46 +60,24 @@ void sortIntArray(struct IntArray *array) {
 }
 
 void printIntArray(struct IntArray *array) {
-    printf("[");
+    printf("[ ");
     for (int i = 0; i < array->length; i++) {
-        printf(" %d", array->dataPtr[i]);
-        if (i < array->length - 1) {
-            printf(",");
-        }
+        printf("%d%s", array->dataPtr[i], (i < array->length - 1) ? ", " : "");
     }
     printf(" ]\n");
 }
 
-int readPositiveInt() {
-    int num;
-    char input[20];
-    bool validInput = false;
-
-    while (!validInput) {
-        printf("Enter an integer: ");
-        if (fgets(input, sizeof(input), stdin) != NULL) {
-            char *endptr;
-            long val = strtol(input, &endptr, 10);
-            if ((*endptr == '\n' || *endptr == '\0') && endptr != input) {
-                num = (int)val;
-                if (num > 0) {
-                    validInput = true;
-                } else {
-                    printf("Invalid input. Enter a positive int.\n");
-                }
-            } else {
-                printf("Invalid input.\n");
-            }
+int main() {
+    int length;
+    printf("Enter the length of the array: ");
+    while (1) {
+        if (scanf("%d", &length) == 1 && length > 0) {
+            break;
         } else {
-            printf("Error reading input.\n");
-            exit(1);
+            printf("Invalid input. Enter a positive integer.\n");
+            while (getchar() != '\n');
         }
     }
-    return num;
-}
-
-int main() {
-    int length = readPositiveInt();
 
     struct IntArray *array = mallocIntArray(length);
     readIntArray(array);
