@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // Struct definition
 struct IntArray {
@@ -34,16 +35,16 @@ void readIntArray(struct IntArray *array) {
     printf("Enter %d positive integers:\n", array->length);
     for (int i = 0; i < array->length; i++) {
         char input[20];
-        int num;
-        while (1) {
+        bool validInput = false;
+        while (!validInput) {
             printf("Enter int: ");
             if (fgets(input, sizeof(input), stdin) != NULL) {
-                char *endptr;
-                long num = strtol(input, &endptr, 10);
-                if (*endptr == '\n' || (*endptr == '\0' && endptr != input)) {
+                char *endpoint;
+                long num = strtol(input, &endpoint, 10);
+                if (*endpoint == '\n' || (*endpoint == '\0' && endpoint != input)) {
                     if (num > 0) {
                         array->dataPtr[i] = (int)num;
-                        break;
+                        validInput = true;
                     } else {
                         printf("Invalid input. Enter a positive int.\n");
                     }
@@ -60,9 +61,9 @@ void readIntArray(struct IntArray *array) {
 
 // Function to swap two integers
 void swap(int *xp, int *yp) {
-    int swapint = *xp; // Store the value of the first element in 'swapint'
-    *xp = *yp; // Assign the value of the second element to the first element
-    *yp = swapint; // Assign the value stored in 'swapint' to the second element
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
 }
 
 // Function to sort the IntArray using Bubble Sort
@@ -78,11 +79,11 @@ void sortIntArray(struct IntArray *array) {
 
 // Function to print the IntArray
 void printIntArray(struct IntArray *array) {
-    printf("[ ");
+    printf("[");
     for (int i = 0; i < array->length; i++) {
-        printf("%d", array->dataPtr[i]);
+        printf(" %d", array->dataPtr[i]);
         if (i < array->length - 1) {
-            printf(", ");
+            printf(",");
         }
     }
     printf(" ]\n");
@@ -91,16 +92,17 @@ void printIntArray(struct IntArray *array) {
 int main() {
     int length;
     char input[20];
+    bool validInput = false;
 
-    while (1) {
-        printf("Enter the length of the array ");
+    while (!validInput) {
+        printf("Enter length: ");
         if (fgets(input, sizeof(input), stdin) != NULL) {
-            char *endptr;
-            long num = strtol(input, &endptr, 10);
-            if (*endptr == '\n' || (*endptr == '\0' && endptr != input)) {
+            char *endpoint;
+            long num = strtol(input, &endpoint, 10);
+            if (*endpoint == '\n' || (*endpoint == '\0' && endpoint != input)) {
                 if (num > 0) {
                     length = (int)num;
-                    break;
+                    validInput = true;
                 } else {
                     printf("Invalid input. Enter a positive int.\n");
                 }
