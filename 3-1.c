@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
 
 // Define a struct to represent an array of integers
+// Struct definition
+
 struct IntArray {
     int length;    // Length of the array
     int *dataPtr;  // Pointer to the array data
 };
+
 
 // Allocate memory for the struct and the integer array, and initialize the struct
 struct IntArray *mallocIntArray(int length) {
@@ -17,11 +22,19 @@ struct IntArray *mallocIntArray(int length) {
         // Print an error message
         perror("Memory allocation error");
         // Terminate the program with an error code (1)
+
+// Function to allocate and initialize the IntArray
+struct IntArray* mallocIntArray(int length) {
+    struct IntArray *array = (struct IntArray*)malloc(sizeof(struct IntArray));
+    if (array == NULL) {
+        perror("mallocIntArray");
+
         exit(1);
     }
     
     // Set the 'length' member of the 'array' struct to the specified 'length' argument
     array->length = length;
+
     
     // Allocate memory for the integer array and store its address in 'array->dataPtr'
     array->dataPtr = (int *)malloc(length * sizeof(int));
@@ -31,12 +44,18 @@ struct IntArray *mallocIntArray(int length) {
         // Print an error message
         perror("Memory allocation error");
         // Terminate the program with an error code (1)
+
+    array->dataPtr = (int*)malloc(length * sizeof(int));
+    if (array->dataPtr == NULL) {
+        perror("malloc");
+
         exit(1);
     }
     
     // Return a pointer to the initialized 'array' struct
     return array;
 }
+
 
 // Free the memory allocated for the struct and the integer array
 void freeIntArray(struct IntArray *array) {
@@ -45,12 +64,21 @@ void freeIntArray(struct IntArray *array) {
 }
 
 // Read positive integers from the user into the integer array
+=======
+// Function to free the IntArray
+void freeIntArray(struct IntArray *arrayPtr) {
+    free(arrayPtr->dataPtr);
+    free(arrayPtr);
+}
+
+// Function to read positive ints from the user to fill the array
+
 void readIntArray(struct IntArray *array) {
     // Prompt the user to enter positive integers
     printf("Enter %d positive integers:\n", array->length);
 
     // Loop through the elements of the array
-    for (int i = 0; i < array->length; i++) {
+
         int value;
 
         // Enter a loop that ensures valid input
@@ -69,10 +97,33 @@ void readIntArray(struct IntArray *array) {
                 
                 // Consume and discard any remaining characters in the input buffer
                 while (getchar() != '\n');
+
+        char input[20];
+        bool validInput = false;
+        while (!validInput) {
+            printf("Enter int: ");
+            if (fgets(input, sizeof(input), stdin) != NULL) {
+                char *endpoint;
+                long num = strtol(input, &endpoint, 10);
+                if (*endpoint == '\n' || (*endpoint == '\0' && endpoint != input)) {
+                    if (num > 0) {
+                        array->dataPtr[i] = (int)num;
+                        validInput = true;
+                    } else {
+                        printf("Invalid input. Enter a positive int.\n");
+                    }
+                } else {
+                    printf("Invalid input. Enter a valid int.\n");
+                }
+            } else {
+                printf("Error reading input.\n");
+                exit(1);
+
             }
         }
     }
 }
+
 
 // Swap the values of two integers
 void swap(int *x, int *y) {
@@ -82,6 +133,16 @@ void swap(int *x, int *y) {
 }
 
 // Sort the integer array in ascending order using the bubble sort algorithm
+
+// Function to swap two integers
+void swap(int *xp, int *yp) {
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+// Function to sort the IntArray using Bubble Sort
+
 void sortIntArray(struct IntArray *array) {
     // Outer loop to iterate through each element in the array
     for (int i = 0; i < array->length - 1; i++) {
@@ -96,6 +157,7 @@ void sortIntArray(struct IntArray *array) {
     }
 }
 
+
 // Print the elements of the integer array
 void printIntArray(struct IntArray *array) {
     // Print the opening bracket for the array
@@ -108,6 +170,16 @@ void printIntArray(struct IntArray *array) {
 
         // Print a comma and space if it's not the last element
         printf("%s", (i < array->length - 1) ? ", " : "");
+
+// Function to print the IntArray
+void printIntArray(struct IntArray *array) {
+    printf("[");
+    for (int i = 0; i < array->length; i++) {
+        printf(" %d", array->dataPtr[i]);
+        if (i < array->length - 1) {
+            printf(",");
+        }
+
     }
 
     // Print the closing bracket for the array and a newline character
@@ -117,6 +189,7 @@ void printIntArray(struct IntArray *array) {
 // Main function to interact with the user, allocate, populate, sort, and print the array
 int main() {
     int length;
+
     
     // Prompt the user to enter the length of the array
     printf("Enter the length of the array: ");
@@ -132,6 +205,29 @@ int main() {
             
             // Consume and discard any remaining characters in the input buffer
             while (getchar() != '\n');
+
+    char input[20];
+    bool validInput = false;
+
+    while (!validInput) {
+        printf("Enter length: ");
+        if (fgets(input, sizeof(input), stdin) != NULL) {
+            char *endpoint;
+            long num = strtol(input, &endpoint, 10);
+            if (*endpoint == '\n' || (*endpoint == '\0' && endpoint != input)) {
+                if (num > 0) {
+                    length = (int)num;
+                    validInput = true;
+                } else {
+                    printf("Invalid input. Enter a positive int.\n");
+                }
+            } else {
+                printf("Invalid input. Enter a valid int.\n");
+            }
+        } else {
+            printf("Error reading input.\n");
+            exit(1);
+
         }
     }
 
